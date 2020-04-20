@@ -1,51 +1,71 @@
 import React, { useEffect, useState } from 'react';
 import { Link, useHistory } from "react-router-dom";
 import { FiPower, FiTrash2 } from "react-icons/fi";
-
-import "./styles.css";
-
-import api from "../../services/api";
+import FirebaseService from "../../services/FirebaseService";
+import { firebaseAuth } from "../../services/firebase";
 import logoImg from "../../assets/logo.svg";
-import heroesImg from "../../assets/heroes.png";
+import "./styles.css";
 
 export default function Profile() {
   const history = useHistory();
   const [ incidents, setIncidents ] = useState([]);
 
-  const ongId = localStorage.getItem('ongId');
-  const ongName = localStorage.getItem('ongName');
+  const userMail = localStorage.getItem('userMail');
+  const userName = localStorage.getItem('userName');
 
   useEffect(() => {
-    api.get('profile', {
-      headers: { Authorization: ongId }
-    }).then(response => {
-      setIncidents(response.data);
+    fetchData()
+  }, [])
+
+  async function fetchData() {
+    firebaseAuth.onAuthStateChanged(user => {
+
+      if (!user) {
+        history.push('/')
+        return
+      }
+
+      FirebaseService.getDataList(user.uid, 'title', 10)//TODO: Create pagination
+      .onSnapshot(snapshot => {
+        setIncidents(snapshot.docs.map(doc => ({ id: doc.id, ...doc.data()})))
+      })
     })
-  }, [ongId]);
+  }
 
-  async function handleDeleteIncident(id) {
+  function handleDeleteIncident(id) {
     try {
-      await api.delete(`incidents/${id}`, {
-        headers: { Authorization: ongId }
-      });
+      firebaseAuth.onAuthStateChanged(async user => {
+  
+        if (!user) {
+          history.push('/')
+          return
+        }
 
-      setIncidents(incidents.filter(incident => incident.id !== id));
+        await FirebaseService.delData(user.uid, id)
+      })
+
     } catch (error) {
       alert('Erro ao deletar o caso, tente novamente.');
     }
   }
 
-  function handleLogout() {
-    localStorage.clear();
-
-    history.push('/');
+  async function handleLogout() {
+    try {
+      await FirebaseService.doSignOut();
+      localStorage.clear();
+      sessionStorage.clear();
+      history.push('/');
+    } catch (error) {
+      console.log(error);      
+      alert(error.message);
+    }
   }
 
   return (
     <div className="profile-container">
       <header>
         <img src={logoImg} alt="Be The Hero" />
-        <span>Bem vinda, {ongName}</span>
+        <span>Bem vindo(a), {userName}</span>
 
         <Link className="button" to="/incidents/new">Cadastrar novo caso</Link>
         <button onClick={handleLogout} type="button">

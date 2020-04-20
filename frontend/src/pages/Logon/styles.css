@@ -31,3 +31,16 @@
 .logon-container section.form form a svg {
     margin-right: 8px;
 }
+
+.logon-container section.form form input {
+    margin-right: 8px;
+    margin-top: 5px;
+}
+
+.logon-container button {
+    margin-bottom: 10px;
+}
+
+.logon-container button svg {
+    margin-right: 10px;
+}

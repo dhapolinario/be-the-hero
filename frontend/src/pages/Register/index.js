@@ -1,44 +1,47 @@
-import React, { useState } from 'react';
-import { Link, useHistory } from "react-router-dom";
-import { FiArrowLeft } from "react-icons/fi";
+import React, { useState } from 'react'
+import { Link, useHistory } from "react-router-dom"
+import { FiArrowLeft } from "react-icons/fi"
+import FirebaseService from "../../services/FirebaseService"
 
-import "./styles.css";
-
-import api from "../../services/api";
-import logoImg from "../../assets/logo.svg";
+import "./styles.css"
+import logoImg from "../../assets/logo.svg"
 
 export default function Register() {
 
-  const [ name, setName ] = useState('');
-  const [ email, setEmail ] = useState('');
-  const [ whatsapp, setWhatsapp ] = useState('');
-  const [ city, setCity ] = useState('');
-  const [ uf, setUf ] = useState('');
-
-  const history = useHistory();
+  const [ email, setEmail ] = useState('')
+  const [ name, setName ] = useState('')
+  const [ whatsapp, setWhatsapp ] = useState('')
+  const [ city, setCity ] = useState('')
+  const [ uf, setUf ] = useState('')
+  const [ password, setPassword ] = useState('')
+  const [ passwordConfirm, setPasswordConfirm ] = useState('')
+  
+  const history = useHistory()
 
   async function handleRegister(e) {
-    e.preventDefault();
-
-    const data = {
-      name,
-      email,
-      whatsapp,
-      city,
-      uf,
-    };
+    e.preventDefault()
 
     try {
-      const response = await api.post('ongs', data);
+        
+      if (password !== passwordConfirm ) {
+        throw Error('Password and confirmation doesn\'t match')
+      }
+
+      const response = await FirebaseService
+      .doCreateUserWithEmailAndPassword(
+        email,
+        password,
+        {name, whatsapp, city, uf}
+      )
       
-      alert(`Seu ID de acesso: ${response.data.id}`);
+      if (response) {
+        history.push('/')
+      }
 
-      history.push('/');
     } catch (error) {
-
-      alert('Erro no cadastro, tente novamente.');
+      console.log(error)   
+      alert(error.message)
     }
-    
   }
 
   return (
@@ -61,16 +64,20 @@ export default function Register() {
             placeholder="Nome da ONG" 
             value={name}
             onChange={e => setName(e.target.value)}
+            required
           />
           <input
-            type="email" placeholder="E-mail" 
+            type="email"
+            placeholder="E-mail" 
             value={email}
             onChange={e => setEmail(e.target.value)}
+            required
           />
           <input
             placeholder="WhatsApp (com DDI, Brasil 55)" 
             value={whatsapp}
             onChange={e => setWhatsapp(e.target.value)}
+            required
           />
 
           <div className="input-group">
@@ -78,12 +85,31 @@ export default function Register() {
               placeholder="Cidade" 
               value={city}
               onChange={e => setCity(e.target.value)}
+              required
             />
             <input
               placeholder="UF"
               style={{ width: 80 }} 
               value={uf}
               onChange={e => setUf(e.target.value)}
+              required
+            />
+          </div>
+          <br /><hr />
+          <div className="input-group">
+            <input
+              type="password"
+              placeholder="Senha" 
+              value={password}
+              onChange={e => setPassword(e.target.value)}
+              required
+            />
+            <input
+              type="password"
+              placeholder="Confirmação"
+              value={passwordConfirm}
+              onChange={e => setPasswordConfirm(e.target.value)}
+              required
             />
           </div>
 

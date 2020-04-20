@@ -1,39 +1,35 @@
-import React, { useState }  from 'react';
-import { Link, useHistory } from "react-router-dom";
-import { FiArrowLeft } from "react-icons/fi";
-
-import "./styles.css";
-
-import api from "../../services/api";
-import logoImg from "../../assets/logo.svg";
-import heroesImg from "../../assets/heroes.png";
+import React, { useState }  from 'react'
+import { Link, useHistory } from "react-router-dom"
+import { FiArrowLeft } from "react-icons/fi"
+import FirebaseService from "../../services/FirebaseService"
+import { firebaseAuth } from "../../services/firebase";
+import logoImg from "../../assets/logo.svg"
+import "./styles.css"
 
 export default function NewIncident() {
-  const history = useHistory();
+  const history = useHistory()
 
-  const [title, setTitle] = useState();
-  const [description, setDescription] = useState();
-  const [value, setValue] = useState();
-
-  const ongId = localStorage.getItem('ongId')  ;
+  const [title, setTitle] = useState('')
+  const [description, setDescription] = useState('')
+  const [value, setValue] = useState('')
 
   async function handleNewIncident(e) {
-    e.preventDefault();
-
-    const data = {
-      title,
-      description,
-      value,
-    };
+    e.preventDefault()
 
     try {
-      await api.post('incidents', data, {
-        headers: { Authorization: ongId }
-      });
 
-      history.push('/profile');
+      firebaseAuth.onAuthStateChanged(async(user) => {
+        if (!user) {
+          history.push('/')
+          return;
+        }
+
+        await FirebaseService.postData(user.uid, {title, description, value})
+        history.push('/profile')
+      })
     } catch (error) {
-      alert('Erro ao cadastrar o caso, tente novamente');
+      console.log(error);      
+      alert(error.message)
     }
   }
 
