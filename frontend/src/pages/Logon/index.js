@@ -105,10 +105,10 @@ export default function Logon() {
 
             <br /><br /><hr />
 
-            <button className="button" onClick={doSignInWithGoogle}>
+            {/* <button className="button" onClick={doSignInWithGoogle}>
               <FaGooglePlusG size={25} />
               Login com Google
-            </button>
+            </button> */}
             
             <Signature />
               
