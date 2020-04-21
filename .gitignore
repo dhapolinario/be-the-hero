@@ -67,3 +67,4 @@ frontend/src/configs/firebaseConfig.js
 
 public
 .firebaserc
+mobile/src/configs/firebaseConfig.js

@@ -4,12 +4,14 @@ export default class FirebaseService {
 
   static doCreateUserWithEmailAndPassword = async (email, password, params) => {
     try{
-      const resp = await firebaseAuth.createUserWithEmailAndPassword(email, password)      
+      const resp = await firebaseAuth.createUserWithEmailAndPassword(email, password)
+
       firebaseDB.collection('ongs')
       .doc(resp.user.uid)
       .set(params)
 
-      // this.setData(resp.user.uid, params)
+      localStorage.setItem('userName', params.name)
+
       return true;
 
     } catch(error) {
@@ -49,31 +51,29 @@ export default class FirebaseService {
 
   // == CRUDs ==
 
-  static getDataList = (doc, orderBy, size = 10) =>
-    firebaseDB.collection('ongs')
-    .doc(doc)
-    .collection("incidents")
+  static getDataList = (doc, orderBy, size = 10) =>    
+    firebaseDB.collection('incidents')
+    .where('ongId', '==', doc)
     .limitToLast(size)
-    .orderBy(orderBy)
+    .orderBy(orderBy, 'desc')
 
-  static delData = (doc, id) => 
-    firebaseDB.collection('ongs')
-    .doc(doc)
-    .collection("incidents")
+  static delData = (id) => 
+    firebaseDB.collection('incidents')
     .doc(id)
     .delete()
 
-  static postData = (doc, params) => {
-    firebaseDB.collection('ongs')
-    .doc(doc)
-    .collection("incidents")
+  static postData = (params) => {
+    firebaseDB.collection('incidents')
     .add(params)
   }
 
   static setData = (doc, params) => {
-    firebaseDB.collection('ongs')
+    firebaseDB.collection('incidents')
     .doc(doc)
     .add(params)
   }
+
+  static getOngData = (id) => firebaseDB.collection('ongs')
+  .doc(id).get()
 
 }

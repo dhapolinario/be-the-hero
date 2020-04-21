@@ -11,7 +11,7 @@ export default function Profile() {
   const [ incidents, setIncidents ] = useState([]);
 
   const userMail = localStorage.getItem('userMail');
-  const userName = localStorage.getItem('userName');
+  const ongName = localStorage.getItem('ongName');
 
   useEffect(() => {
     fetchData()
@@ -25,7 +25,7 @@ export default function Profile() {
         return
       }
 
-      FirebaseService.getDataList(user.uid, 'title', 10)//TODO: Create pagination
+      FirebaseService.getDataList(user.uid, 'title')//TODO: Create pagination
       .onSnapshot(snapshot => {
         setIncidents(snapshot.docs.map(doc => ({ id: doc.id, ...doc.data()})))
       })
@@ -41,7 +41,7 @@ export default function Profile() {
           return
         }
 
-        await FirebaseService.delData(user.uid, id)
+        await FirebaseService.delData(id)
       })
 
     } catch (error) {
@@ -65,7 +65,7 @@ export default function Profile() {
     <div className="profile-container">
       <header>
         <img src={logoImg} alt="Be The Hero" />
-        <span>Bem vindo(a), {userName}</span>
+        <span>Bem vindo(a), {ongName}</span>
 
         <Link className="button" to="/incidents/new">Cadastrar novo caso</Link>
         <button onClick={handleLogout} type="button">

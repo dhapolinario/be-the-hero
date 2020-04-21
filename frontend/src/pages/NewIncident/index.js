@@ -1,4 +1,4 @@
-import React, { useState }  from 'react'
+import React, { useState, useEffect }  from 'react'
 import { Link, useHistory } from "react-router-dom"
 import { FiArrowLeft } from "react-icons/fi"
 import FirebaseService from "../../services/FirebaseService"
@@ -12,6 +12,11 @@ export default function NewIncident() {
   const [title, setTitle] = useState('')
   const [description, setDescription] = useState('')
   const [value, setValue] = useState('')
+  const [ongName, setOngName] = useState('')
+
+  useEffect(() => {
+    setOngName(localStorage.getItem('ongName'))
+  }, [])
 
   async function handleNewIncident(e) {
     e.preventDefault()
@@ -24,7 +29,9 @@ export default function NewIncident() {
           return;
         }
 
-        await FirebaseService.postData(user.uid, {title, description, value})
+        await FirebaseService.postData({
+          title, description, value, ongId: user.uid, ongName
+        })
         history.push('/profile')
       })
     } catch (error) {

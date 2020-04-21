@@ -31,8 +31,10 @@ export default function Register() {
       .doCreateUserWithEmailAndPassword(
         email,
         password,
-        {name, whatsapp, city, uf}
+        {name, whatsapp, city, uf, email}
       )
+
+      localStorage.setItem('ongName', name)
       
       if (response) {
         history.push('/')

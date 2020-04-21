@@ -16,7 +16,7 @@ export default function Logon() {
   const [ email, setEmail ] = useState('')
   const [ password, setPassword ] = useState('')
 
-  const history = useHistory();
+  const history = useHistory()
 
   useEffect(() => {
     checkSession()
@@ -38,9 +38,12 @@ export default function Logon() {
     try {
     
       const response = await FirebaseService
-        .doSignInWithEmailAndPassword(email, password)      
+        .doSignInWithEmailAndPassword(email, password)
+        
+      const ong = await FirebaseService.getOngData(response.user.uid)
+        .then(doc => (doc.data()))
 
-      localStorage.setItem('userName', email)
+      localStorage.setItem('ongName', ong.name)
 
       history.push('/profile')
     } catch (error) {
@@ -58,7 +61,7 @@ export default function Logon() {
       const user = response.user;
       
       sessionStorage.setItem('token', token)
-      localStorage.setItem('userName', user.displayName.split(' ')[0])
+      localStorage.setItem('ongName', user.displayName.split(' ')[0])
 
       history.push('/profile')
     } catch (error) {
