@@ -14,8 +14,6 @@ Possui conexão com serviço Google Firebase, um sistema web e um app mobile.
 - Firebase - BaaS
 - React - Frontend web
 - React Native/Expo - Mobile app
-- SQLite - Banco de dados
-- Knex.js - SQL query builder
 - Jest - Testes
 
 # Instalação
